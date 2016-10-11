@@ -1,0 +1,13 @@
+---
+#Drop the activemq java heap size
+pe_mcollective::role::master::activemq_heap_mb: '96'
+
+#PE3.7
+puppet_enterprise::profile::amq::broker::heap_mb: '96'
+#shared_buffers takes affect during install but is not managed after
+puppet_enterprise::profile::database::shared_buffers: '4MB'
+#2015.3.2 and above
+puppet_enterprise::profile::orchestrator::java_args:
+  Xmx: '64m'
+  Xms: '64m'
+  'XX:+UseG1GC': ''

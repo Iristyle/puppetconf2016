@@ -1,0 +1,134 @@
+---
+# Keep the default Vagrant SSH key. It's publicly available and thus
+# "insecure", but these VMs aren't for production use and having a well-known
+# key allows for easy automation and documentation.
+ssh:
+  insert_key: false
+
+vms:
+  - name: davis-master
+    hostname: davis-master.vm
+    box: puppetlabs/centos-7.2-64-nocm
+    box_version: '1.0.1'
+    # SLICE: hostname: davis-master.slice.lan
+    # SLICE: providers:
+    # SLICE:   - type: openstack
+    # SLICE:     image: 'centos_7_x86_64'
+    # SLICE:     flavor: m1.medium
+    roles:
+      # notes that roles are run in reverse order... because
+      - pe-puppet-master
+      # tune for 3GB / 1 core
+      - pe-memory-tuning3
+      - pe-forward-console
+      - el-stop-firewall
+      - el-fix-path
+      - base
+      - 3gb-memory
+
+  - name: loadbalancer
+    hostname: loadbalancer.vm
+    box: puppetlabs/centos-7.2-64-nocm
+    box_version: '1.0.1'
+    provisioners:
+      - type: pe_agent
+        master_vm: davis-master
+    roles:
+      - el-stop-firewall
+      - el-fix-path
+      - forward-haproxy-console
+      - forward-http
+      - base
+      - 256mb-memory
+
+  - name: win2012-web-green-1
+    # hostname must not be a FQDN or the rename fails on Windows
+    hostname: win2012-web-green-1
+    # SLICE: box: windows-2012r2-x64-virtualbox-nocm
+    # ATLAS: box: mwrock/Windows2012R2
+    box: MattHodge/Windows2012R2-WMF5-NOCM
+    box_version: '0.0.2'
+    # box: win2012r2-x64-virtualbox-nocm
+    # box_download_checksum_type: md5
+    # box_download_checksum: 63b8d3fdde5b7f5190dd937ea7897971
+    # # SLICE: providers:
+      # SLICE: - type: openstack
+      # SLICE:   image: 'windows_2012_r2_std_eval_x86_64'
+      # SLICE:   # Image requires more disk space than g1.medium
+      # SLICE:   flavor: g1.large
+    provisioners:
+      - type: pe_agent
+        master_vm: davis-master
+    roles:
+    # only necessary if using win2012r2-x64-virtualbox-nocm
+    # - windows-reboot
+    # - windows-81_2012r2-wmf5
+      - windows
+      - base
+      - 1gb-memory
+
+  - name: win2012-web-green-2
+    # hostname must not be a FQDN or the rename fails on Windows
+    hostname: win2012-web-green-2
+    box: MattHodge/Windows2012R2-WMF5-NOCM
+    box_version: 0.0.2
+    provisioners:
+      - type: pe_agent
+        master_vm: davis-master
+    roles:
+      - windows
+      - base
+      - 1gb-memory
+
+  - name: win2012-web-blue-1
+    # hostname must not be a FQDN or the rename fails on Windows
+    hostname: win2012-web-blue-1
+    box: MattHodge/Windows2012R2-WMF5-NOCM
+    box_version: '0.0.2'
+    provisioners:
+      - type: pe_agent
+        master_vm: davis-master
+    roles:
+      - windows
+      - base
+      - 1gb-memory
+
+  - name: win2012-web-blue-2
+    # hostname must not be a FQDN or the rename fails on Windows
+    hostname: win2012-web-blue-2
+    box: MattHodge/Windows2012R2-WMF5-NOCM
+    box_version: 0.0.2
+    provisioners:
+      - type: pe_agent
+        master_vm: davis-master
+    roles:
+      - windows
+      - base
+      - 1gb-memory
+
+  - name: win2012-choco
+    # hostname must not be a FQDN or the rename fails on Windows
+    hostname: win2012-choco
+    box: MattHodge/Windows2012R2-WMF5-NOCM
+    box_version: '0.0.2'
+    provisioners:
+      - type: pe_agent
+        master_vm: davis-master
+    roles:
+      - windows
+      - base
+      - 1gb-memory
+
+  - name: windows-10
+    # hostname must not be a FQDN or the rename fails on Windows
+    hostname: windows-10
+    box: jacqinthebox/windows10LTSB
+    box_version: "0.3"
+    # ATLAS: 8.1 - mwrock/windows8.1-amd64
+    # Other Windows 10 boxes
+    # https://atlas.hashicorp.com/boxes/search?action=search&controller=search&order=desc&page=1&provider=&q=windows&sort=updated&utf8=%E2%9C%93
+    roles:
+      - pe-client-tools-windows
+      - windows
+      - base
+      - 1.2gb-memory
