@@ -2,7 +2,12 @@
 param(
   [Parameter(Mandatory = $true)]
   [String]
-  $PuppetMaster
+  $PuppetMaster,
+
+  [Parameter(Mandatory = $false)]
+  [Switch]
+  $Force
+
 )
 $ErrorActionPreference = 'Stop'
 
@@ -24,6 +29,34 @@ Add-type @"
         }
     }
 "@
+
+Function Test-Configured() {
+  if (-not (Test-Path -Path $userDir)) {
+    Write-Host "Configuration Directory Not Present - Not Yet Configured"
+    return $false
+  }
+
+  if (Test-Path -Path $tokenFile) {
+    $fileInfo = Get-Item -Path $tokenFile
+    Write-Host "Token file found and last updated $($fileInfo.LastWriteTime)" -Foreground Green
+  } else {
+    Write-Host "RBAC Token File Not Found - Not Yet Configured"
+    return $false
+  }
+
+  # Check config Files
+  'puppet-code.conf','puppetdb.conf','puppet-access.conf','orchestrator.conf' | % {
+    $filepath = Join-Path -Path $userClientToolsDir -ChildPath $_
+    if (Test-Path -Path $filePath) {
+      Write-Host "PE Client Tools configuration file '$_' found" -Foreground Green
+    } else {
+      Write-Warning "Missing configuration file '$filepath' - Not Yet Configured"
+      return $false
+    }
+  }
+
+  return $true
+}
 
 Function Invoke-ShowConfiguration() {
   Write-Host ""
@@ -129,5 +162,8 @@ Function Invoke-QuickConfig()
 
 Write-Host "PE Client Tools Helper"
 Write-Host "----------------------"
-Invoke-QuickConfig -PuppetMaster $PuppetMaster
+if ($Force -or (! (Test-Configured)))
+{
+  Invoke-QuickConfig -PuppetMaster $PuppetMaster
+}
 Invoke-ShowConfiguration
