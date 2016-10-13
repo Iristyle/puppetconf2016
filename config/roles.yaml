@@ -80,6 +80,10 @@ roles:
       - {type: shell, path: './config/install-pe-client-tools.bat'}
       - {type: shell, path: './config/config-client-tools.ps1', args: 'davis-master.vm'}
 
+  choco-client-windows:
+    provisioners:
+      - {type: shell, path: './config/install-choco-client.bat', args: 'internal-choco-feed win2012-choco chocolateyrocks'}
+
   # base definition hacked from puppet-debugging-kit
   base:
     private_networks:
