@@ -28,7 +28,7 @@ roles:
         answer_extras:
           - |
             "puppet_enterprise::profile::master::code_manager_auto_configure": true
-            "puppet_enterprise::profile::master::r10k_remote": "https://github.com/Iristyle/puppetconf2016-controlrepo.git"
+            "puppet_enterprise::profile::master::r10k_remote": "http://windows-10/puppet/controlrepo"
             "puppet_enterprise::profile::console::console_services_plaintext_status_enabled": true
       # NOTE: with this on, can't resolve internal server agent-downloads.delivery.puppetlabs.net
       # which is necessary when running nightly builds to grab MSI + other agent packages with pe_agent
@@ -80,7 +80,7 @@ roles:
   pe-client-tools-windows:
     provisioners:
       - {type: shell, path: './config/install-pe-client-tools.bat'}
-      - {type: shell, path: './config/config-client-tools.ps1', args: 'davis-master.vm'}
+      # - {type: shell, path: './config/config-client-tools.ps1', args: 'davis-master.vm'}
 
   choco-client-windows:
     provisioners:
