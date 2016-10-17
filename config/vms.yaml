@@ -129,6 +129,7 @@ vms:
     # https://atlas.hashicorp.com/boxes/search?action=search&controller=search&order=desc&page=1&provider=&q=windows&sort=updated&utf8=%E2%9C%93
     roles:
       - devbox-windows
+      - githost-windows
       - choco-client-windows
       - pe-client-tools-windows
       - windows

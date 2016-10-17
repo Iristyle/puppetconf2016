@@ -90,6 +90,10 @@ roles:
     provisioners:
       - {type: shell, path: './config/setup-dev-box.ps1'}
 
+  githost-windows:
+    provisioners:
+      - {type: shell, path: './config/install-gogs-service.ps1', args: 'https://github.com/Iristyle/puppetconf2016-controlrepo.git'}
+
   # base definition hacked from puppet-debugging-kit
   base:
     private_networks:
