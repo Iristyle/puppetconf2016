@@ -27,3 +27,31 @@ choco install -y poshgit
 - then ask puppet to run on all nodes
   puppet-job run --nodes loadbalancer.vm,win2012-web-green-1,win2012-web-green-2,win2012-web-blue-1,win2012-web-blue-2
 
+Notes for verifying everything is running:
+
+* curl http://davis-master.vm:8123/status/v1/services
+
+# curl https://davis-master.vm:4433/status/v1/services \
+#     --cert /etc/puppetlabs/puppet/ssl/certs/<WHITELISTED CERTNAME>.pem \
+#     --key /etc/puppetlabs/puppet/ssl/private_keys/<WHITELISTED CERTNAME>.pem \
+#     --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem
+
+Activity Service
+http://127.0.0.1:4432
+
+Classifier Service
+http://127.0.0.1:4432
+
+Code Manager Service
+https://davis-master.vm:8140
+
+Puppet Server
+https://davis-master.vm:8140
+
+PuppetDB Service
+https://davis-master.vm:8081
+
+RBAC Service
+http://127.0.0.1:4432
+
+sudo systemctl start pe-puppetserver.service
